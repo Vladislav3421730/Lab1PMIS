@@ -1,1 +1,1 @@
-# Lab1PMIS
+# Lab2PMIS
