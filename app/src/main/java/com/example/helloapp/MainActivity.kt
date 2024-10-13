@@ -1,26 +1,19 @@
 package com.example.helloapp
 
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
@@ -28,15 +21,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -54,6 +43,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+class ComposeFileProvider : FileProvider(R.xml.files_paths)
+
 @Composable
 fun Main() {
     val navController = rememberNavController()
@@ -66,6 +57,7 @@ fun Main() {
             }
             composable(NavRoutes.Lists.route) { TrainListScreen() }
             composable(NavRoutes.Image.route) { ImageScreen()}
+            composable(NavRoutes.Pick.route)  { CameraScreen()  }
         }
         BottomNavigationBar(navController = navController)
     }
@@ -104,6 +96,7 @@ sealed class NavRoutes(val route: String) {
     object Home : NavRoutes("home")
     object Lists : NavRoutes("lists")
     object Image : NavRoutes("image")
+    object Pick: NavRoutes("pick")
 }
 
 
@@ -178,7 +171,7 @@ fun Home(
         var text = "Канаш Алексей Васильевич"
 
         Text(
-            text = name, // Используем переданное состояние
+            text = name,
             modifier = modifier,
             fontSize = 24.sp,
             color = Color.Blue
@@ -189,7 +182,7 @@ fun Home(
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Button(
-                onClick = { onNameChange(text) }, // Меняем состояние через переданную функцию
+                onClick = { onNameChange(text) },
                 colors = ButtonDefaults.buttonColors(
                     Color(0xFF3CBD18)
                 )
@@ -197,7 +190,7 @@ fun Home(
                 Text(text = "Вывести имя", fontSize = 24.sp, color = Color.Green)
             }
             Button(
-                onClick = { onNameChange("") }, // Сбрасываем состояние через переданную функцию
+                onClick = { onNameChange("") },
                 colors = ButtonDefaults.buttonColors(
                     Color(0xFF3CBD18)
                 )
@@ -208,63 +201,7 @@ fun Home(
     }
 }
 
-@Composable
-fun ImageScreen() {
-    var rotationAngle by remember { mutableStateOf(0f) }
-    val animatedRotation by animateFloatAsState(
-        targetValue = rotationAngle,
-        animationSpec = tween(durationMillis = 600)
-    )
 
-    val configuration = LocalConfiguration.current
-
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    if (isLandscape) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ImageContent(animatedRotation, onRotate = { rotationAngle += 180f })
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            ImageContent(animatedRotation, onRotate = { rotationAngle += 180f })
-        }
-    }
-}
-
-@Composable
-fun ImageContent(rotation: Float, onRotate: () -> Unit) {
-    Image(
-        painter = painterResource(id = R.drawable.students),
-        contentDescription = "Avatar",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .padding(16.dp)
-            .size(150.dp)
-            .clip(CircleShape)
-            .rotate(rotation)
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Button(
-        onClick = { onRotate() },
-        colors = ButtonDefaults.buttonColors(Color(0xFF6200EE))
-    ) {
-        Text(text = "Повернуть", color = Color.White)
-    }
-}
 
 data class BarItem(
     val title: String,
@@ -288,7 +225,12 @@ object NavBarItems {
             title = "Image",
             image = Icons.Filled.Face,
             route = "image"
-        )
+        ),
+        BarItem(
+            title = "Picks",
+            image = Icons.Filled.CheckCircle,
+            route = "pick"
+    )
     )
 }
 
