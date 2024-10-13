@@ -189,7 +189,7 @@ fun Home(
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Button(
-                onClick = { onNameChange(text) }, // Меняем состояние через переданную функцию
+                onClick = { onNameChange(text) },
                 colors = ButtonDefaults.buttonColors(
                     Color(0xFF3CBD18)
                 )
@@ -197,7 +197,7 @@ fun Home(
                 Text(text = "Вывести имя", fontSize = 24.sp, color = Color.Green)
             }
             Button(
-                onClick = { onNameChange("") }, // Сбрасываем состояние через переданную функцию
+                onClick = { onNameChange("") },
                 colors = ButtonDefaults.buttonColors(
                     Color(0xFF3CBD18)
                 )
